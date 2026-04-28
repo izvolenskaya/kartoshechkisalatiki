@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Авторизация</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --border: #2a2a32;
+      --accent: #c8f060;
+      --accent2: #60c8f0;
+      --text: #e8e8ec;
+      --muted: #6b6b7a;
+      --error: #f06070;
+      --success: #60f0a0;
+      --radius: 4px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background grid decoration */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px; right: -200px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,240,96,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── CARD ─────────────────────────────────── */
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 36px 36px;
+      box-shadow: 0 0 0 1px rgba(200,240,96,0.04), 0 32px 64px rgba(0,0,0,0.5);
+      animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 32px;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── FORM FIELDS ──────────────────────────── */
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,240,96,0.1);
+    }
+
+    input.error-field {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(240,96,112,0.1);
+    }
+
+    /* ── CHECKBOX ─────────────────────────────── */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: var(--bg);
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .checkbox-row input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox-row input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px; top: 2px;
+      width: 5px; height: 9px;
+      border: 2px solid #0d0d0f;
+      border-top: none; border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-row span {
+      font-size: 13px;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    /* ── BUTTON ───────────────────────────────── */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0d0f;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(200,240,96,0.3);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── MESSAGES ─────────────────────────────── */
+    .msg {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 20px;
+      border-left: 3px solid;
+    }
+
+    .msg.show { display: block; animation: fadeIn 0.2s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .msg-error {
+      background: rgba(240,96,112,0.08);
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .msg-success {
+      background: rgba(96,240,160,0.08);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    /* ── TOGGLE LINK ──────────────────────────── */
+    .switch-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .switch-link button {
+      background: none;
+      border: none;
+      color: var(--accent2);
+      cursor: pointer;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .switch-link button:hover { color: var(--accent); }
+
+    /* ── FORM PANELS ──────────────────────────── */
+    .form-panel { display: none; }
+    .form-panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- ═══ REGISTRATION FORM ═══ -->
+  <div id="panel-reg" class="form-panel active">
+    <div class="card-label">Новый аккаунт</div>
+    <div class="card-title">Регистрация</div>
+
+    <div id="reg-msg" class="msg"></div>
+
+    <div class="field">
+      <label for="reg-login">Логин</label>
+      <input type="text" id="reg-login" placeholder="user_name-01" autocomplete="off"/>
+    </div>
+
+    <div class="field">
+      <label for="reg-pass">Пароль</label>
+      <input type="password" id="reg-pass" placeholder="не менее 6 символов"/>
+    </div>
+
+    <label class="checkbox-row" for="reg-save">
+      <input type="checkbox" id="reg-save"/>
+      <span>Сохранить данные</span>
+    </label>
+
+    <button class="btn btn-primary" onclick="doRegister()">Создать аккаунт</button>
+
+    <div class="switch-link">
+      Уже есть аккаунт?
+      <button onclick="showPanel('login')">Войти</button>
+    </div>
+  </div>
+
+  <!-- ═══ LOGIN FORM ═══ -->
+  <div id="panel-login" class="form-panel">
+    <div class="card-label">Добро пожаловать</div>
+    <div class="card-title">Вход</div>
+
+    <div id="login-msg" class="msg"></div>
+
+    <div class="field">
+      <label for="login-login">Логин</label>
+      <input type="text" id="login-login" placeholder="user_name-01" autocomplete="off"/>
+    </div>
+
+    <div class="field">
+      <label for="login-pass">Пароль</label>
+      <input type="password" id="login-pass" placeholder="••••••"/>
+    </div>
+
+    <label class="checkbox-row" for="login-auto">
+      <input type="checkbox" id="login-auto"/>
+      <span>Автоматически авторизоваться при следующем входе</span>
+    </label>
+
+    <button class="btn btn-primary" onclick="doLogin()">Войти</button>
+
+    <div class="switch-link">
+      Нет аккаунта?
+      <button onclick="showPanel('reg')">Зарегистрироваться</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── Helpers ──────────────────────────────────
+  const $ = id => document.getElementById(id);
+
+  function showPanel(name) {
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    $('panel-' + name).classList.add('active');
+    clearMessages();
+  }
+
+  function showMsg(id, text, type) {
+    const el = $(id);
+    el.textContent = text;
+    el.className = 'msg show msg-' + type;
+  }
+
+  function clearMessages() {
+    document.querySelectorAll('.msg').forEach(m => m.className = 'msg');
+  }
+
+  function markError(id) {
+    $(id).classList.add('error-field');
+    $(id).addEventListener('input', () => $(id).classList.remove('error-field'), { once: true });
+  }
+
+  // ── Storage helpers ───────────────────────────
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || '{}');
+  }
+
+  function saveUser(login, password) {
+    const users = getUsers();
+    users[login] = password;
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  // ── Validation ───────────────────────────────
+  const loginRe = /^[a-zA-Z0-9_-]+$/;
+
+  // ── Registration ─────────────────────────────
+  function doRegister() {
+    const login = $('reg-login').value.trim();
+    const pass  = $('reg-pass').value;
+    const save  = $('reg-save').checked;
+
+    // Validate required
+    if (!login || !pass) {
+      showMsg('reg-msg', 'Все поля обязательны для заполнения.', 'error');
+      if (!login) markError('reg-login');
+      if (!pass)  markError('reg-pass');
+      return;
+    }
+
+    // Validate login format
+    if (!loginRe.test(login)) {
+      showMsg('reg-msg', 'Логин может содержать только латинские буквы, цифры, _ и -.', 'error');
+      markError('reg-login');
+      return;
+    }
+
+    // Validate password length
+    if (pass.length < 6) {
+      showMsg('reg-msg', 'Пароль должен содержать не менее 6 символов.', 'error');
+      markError('reg-pass');
+      return;
+    }
+
+    // Check if user exists
+    const users = getUsers();
+    if (users[login] !== undefined) {
+      showMsg('reg-msg', 'Пользователь с таким логином уже существует. Перенаправляем на вход…', 'error');
+      setTimeout(() => {
+        showPanel('login');
+        $('login-login').value = login;
+      }, 1500);
+      return;
+    }
+
+    // Register
+    saveUser(login, pass);
+
+    if (save) {
+      localStorage.setItem('saved_login', login);
+      localStorage.setItem('saved_pass', pass);
+    } else {
+      localStorage.removeItem('saved_login');
+      localStorage.removeItem('saved_pass');
+    }
+
+    showMsg('reg-msg', 'Регистрация прошла успешно! Выполняем вход…', 'success');
+    setTimeout(() => {
+      sessionStorage.setItem('auth_user', login);
+      window.location.href = 'messages.html';
+    }, 1000);
+  }
+
+  // ── Login ────────────────────────────────────
+  function doLogin() {
+    const login = $('login-login').value.trim();
+    const pass  = $('login-pass').value;
+    const auto  = $('login-auto').checked;
+
+    if (!login || !pass) {
+      showMsg('login-msg', 'Все поля обязательны для заполнения.', 'error');
+      if (!login) markError('login-login');
+      if (!pass)  markError('login-pass');
+      return;
+    }
+
+    const users = getUsers();
+    if (users[login] === undefined) {
+      showMsg('login-msg', 'Пользователь не найден.', 'error');
+      markError('login-login');
+      return;
+    }
+
+    if (users[login] !== pass) {
+      showMsg('login-msg', 'Неверный пароль.', 'error');
+      markError('login-pass');
+      return;
+    }
+
+    // Auto-login: store in localStorage; otherwise use sessionStorage only
+    if (auto) {
+      localStorage.setItem('auto_login', login);
+      localStorage.setItem('auto_pass', pass);
+    } else {
+      localStorage.removeItem('auto_login');
+      localStorage.removeItem('auto_pass');
+    }
+
+    sessionStorage.setItem('auth_user', login);
+    showMsg('login-msg', 'Вход выполнен! Перенаправляем…', 'success');
+    setTimeout(() => { window.location.href = 'messages.html'; }, 800);
+  }
+
+  // ── On page load: check auto-login & saved data ──
+  (function init() {
+    // Auto-login redirect
+    const autoUser = localStorage.getItem('auto_login');
+    const autoPass = localStorage.getItem('auto_pass');
+    if (autoUser && autoPass) {
+      const users = getUsers();
+      if (users[autoUser] === autoPass) {
+        sessionStorage.setItem('auth_user', autoUser);
+        window.location.href = 'messages.html';
+        return;
+      }
+    }
+
+    // Pre-fill saved registration data
+    const savedLogin = localStorage.getItem('saved_login');
+    const savedPass  = localStorage.getItem('saved_pass');
+    if (savedLogin) $('reg-login').value = savedLogin;
+    if (savedPass)  $('reg-pass').value  = savedPass;
+  })();
+</script>
+</body>
+</html>
