@@ -3,33 +3,47 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Сообщения</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <title>Минитвиттер</title>
 
-    :root {
-      --bg: #0d0d0f;
-      --surface: #16161a;
-      --border: #2a2a32;
-      --accent: #c8f060;
-      --accent2: #60c8f0;
-      --text: #e8e8ec;
-      --muted: #6b6b7a;
-      --radius: 4px;
+  <!-- Подключаем шрифты Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* Сброс стандартных отступов браузера */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
+    /* ── CSS-переменные (цвета и радиус скругления) ── */
+    :root {
+      --bg:         #0d0d0f;              /* основной фон страницы */
+      --surface:    #16161a;              /* фон карточек и панелей */
+      --surface2:   #1e1e24;              /* фон шапки таблицы */
+      --border:     #2a2a32;             /* цвет рамок */
+      --accent:     #c8f060;             /* основной акцент (зелёный) */
+      --accent2:    #60c8f0;             /* вторичный акцент (голубой) */
+      --text:       #e8e8ec;             /* основной цвет текста */
+      --muted:      #6b6b7a;             /* приглушённый текст */
+      --error:      #f06070;             /* цвет ошибок / удаления */
+      --own-row:    rgba(200,240,96,0.04);   /* фон строк текущего пользователя */
+      --own-border: rgba(200,240,96,0.15);   /* левая граница своих строк */
+      --radius:     4px;                 /* радиус скругления */
+    }
+
+    /* ── Общие стили страницы ── */
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Syne', sans-serif;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      flex-direction: column; /* шапка сверху, контент растягивается */
       position: relative;
-      overflow-x: hidden;
     }
 
+    /* Декоративная сетка на фоне */
     body::before {
       content: '';
       position: fixed;
@@ -39,16 +53,18 @@
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
       background-size: 48px 48px;
       opacity: 0.3;
-      pointer-events: none;
+      pointer-events: none; /* не перекрывает клики */
     }
 
-    /* ── TOPBAR ──────────────────────────────── */
+    /* ══════════════════════════════════════
+       ШАПКА САЙТА
+       ══════════════════════════════════════ */
     header {
-      position: sticky;
+      position: sticky;    /* шапка прилипает при скролле */
       top: 0;
       z-index: 10;
-      background: rgba(13,13,15,0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(13,13,15,0.88);
+      backdrop-filter: blur(12px); /* размытие фона под шапкой */
       border-bottom: 1px solid var(--border);
       padding: 0 32px;
       display: flex;
@@ -57,6 +73,7 @@
       height: 60px;
     }
 
+    /* Логотип в шапке */
     .logo {
       font-family: 'Space Mono', monospace;
       font-size: 13px;
@@ -65,22 +82,26 @@
       letter-spacing: 0.1em;
     }
 
+    /* Блок с именем пользователя и кнопкой выхода */
     .user-chip {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
+    /* Текст «вошли как ...» */
     .user-name {
       font-family: 'Space Mono', monospace;
       font-size: 12px;
       color: var(--muted);
     }
 
+    /* Имя пользователя внутри текста */
     .user-name span {
       color: var(--text);
     }
 
+    /* Кнопка «Выйти» */
     .btn-logout {
       font-family: 'Space Mono', monospace;
       font-size: 11px;
@@ -96,17 +117,23 @@
       transition: opacity 0.15s, transform 0.15s;
     }
 
-    .btn-logout:hover { opacity: 0.85; transform: translateY(-1px); }
-
-    /* ── MAIN ─────────────────────────────────── */
-    main {
-      flex: 1;
-      max-width: 700px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 40px 24px;
+    .btn-logout:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
     }
 
+    /* ══════════════════════════════════════
+       ОСНОВНОЙ КОНТЕНТ
+       ══════════════════════════════════════ */
+    main {
+      flex: 1;              /* растягивает контент до конца страницы */
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;       /* горизонтальное центрирование */
+      padding: 40px 24px 60px;
+    }
+
+    /* Маленькая подпись над заголовком */
     .page-label {
       font-family: 'Space Mono', monospace;
       font-size: 10px;
@@ -116,6 +143,7 @@
       margin-bottom: 6px;
     }
 
+    /* Крупный заголовок страницы */
     .page-title {
       font-size: 32px;
       font-weight: 800;
@@ -123,15 +151,28 @@
       margin-bottom: 32px;
     }
 
-    /* ── COMPOSE ──────────────────────────────── */
+    /* ══════════════════════════════════════
+       ФОРМА ОТПРАВКИ СООБЩЕНИЯ
+       ══════════════════════════════════════ */
     .compose {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 32px;
+      padding: 24px;
+      margin-bottom: 36px;
     }
 
+    /* Заголовок формы отправки */
+    .compose-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* Текстовое поле для ввода сообщения */
     .compose textarea {
       width: 100%;
       background: var(--bg);
@@ -140,24 +181,41 @@
       color: var(--text);
       font-family: 'Syne', sans-serif;
       font-size: 14px;
+      line-height: 1.6;
       padding: 12px 14px;
-      resize: vertical;
-      min-height: 80px;
+      resize: vertical;     /* можно растянуть по вертикали */
+      min-height: 90px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
+    /* Подсветка textarea при фокусе */
     .compose textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(200,240,96,0.1);
     }
 
+    /* Нижняя строка формы: счётчик символов + кнопка */
     .compose-footer {
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: space-between;
     }
 
+    /* Счётчик введённых символов */
+    .char-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Счётчик становится красным при приближении к лимиту */
+    .char-count.warn {
+      color: var(--error);
+    }
+
+    /* Кнопка «Отправить» */
     .btn-send {
       font-family: 'Space Mono', monospace;
       font-size: 11px;
@@ -168,7 +226,7 @@
       background: var(--accent);
       border: none;
       border-radius: var(--radius);
-      padding: 10px 20px;
+      padding: 10px 22px;
       cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s;
     }
@@ -178,172 +236,459 @@
       box-shadow: 0 6px 20px rgba(200,240,96,0.25);
     }
 
-    /* ── MESSAGES LIST ────────────────────────── */
-    .messages-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      animation: slideUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .message-meta {
+    /* ══════════════════════════════════════
+       ЗАГОЛОВОК НАД ТАБЛИЦЕЙ
+       ══════════════════════════════════════ */
+    .table-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
 
-    .message-author {
-      font-family: 'Space Mono', monospace;
-      font-size: 12px;
+    /* Текст «Все сообщения» */
+    .table-heading {
+      font-size: 16px;
       font-weight: 700;
-      color: var(--accent2);
     }
 
-    .message-time {
+    /* Счётчик сообщений справа */
+    .table-count {
       font-family: 'Space Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       color: var(--muted);
     }
 
-    .message-text {
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--text);
+    /* Обёртка таблицы с рамкой и скруглением */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden; /* скрывает выход строк за скруглённые углы */
     }
 
+    /* ══════════════════════════════════════
+       ТАБЛИЦА СООБЩЕНИЙ
+       ══════════════════════════════════════ */
+    table {
+      width: 100%;
+      border-collapse: collapse; /* убираем двойные рамки между ячейками */
+    }
+
+    /* Шапка таблицы */
+    thead {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Ячейки шапки */
+    thead th {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 16px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    /* Последняя колонка (кнопка удаления) — по центру */
+    thead th:last-child {
+      text-align: center;
+      width: 100px;
+    }
+
+    /* Строки тела таблицы */
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    /* Последняя строка без нижней рамки */
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    /* Подсветка строки при наведении */
+    tbody tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* Строки сообщений текущего пользователя — зеленоватый фон */
+    tbody tr.own-row {
+      background: var(--own-row);
+      border-left: 2px solid var(--own-border); /* акцентная левая граница */
+    }
+
+    tbody tr.own-row:hover {
+      background: rgba(200,240,96,0.07);
+    }
+
+    /* Стили ячеек тела таблицы */
+    tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    /* Ячейка с порядковым номером */
+    .td-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      width: 40px;
+    }
+
+    /* Ячейка с именем автора */
+    .td-author {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--accent2); /* чужие — голубые */
+      white-space: nowrap;
+    }
+
+    /* Имя текущего пользователя — зелёное */
+    .td-author.is-me {
+      color: var(--accent);
+    }
+
+    /* Ячейка с текстом сообщения */
+    .td-text {
+      line-height: 1.55;
+      word-break: break-word; /* перенос длинных слов */
+    }
+
+    /* Ячейка со временем */
+    .td-time {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* Ячейка с кнопкой действия — по центру */
+    .td-action {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /* Кнопка удаления сообщения */
+    .btn-delete {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--error);
+      background: rgba(240,96,112,0.08);
+      border: 1px solid rgba(240,96,112,0.25);
+      border-radius: var(--radius);
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-delete:hover {
+      background: rgba(240,96,112,0.2);
+      transform: scale(1.04);
+    }
+
+    /* ══════════════════════════════════════
+       ПУСТОЕ СОСТОЯНИЕ (нет сообщений)
+       ══════════════════════════════════════ */
     .empty-state {
       text-align: center;
       padding: 64px 24px;
       color: var(--muted);
       font-family: 'Space Mono', monospace;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .empty-state .icon {
-      font-size: 40px;
+      font-size: 36px;
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+    }
+
+    /* ══════════════════════════════════════
+       АНИМАЦИЯ УДАЛЕНИЯ СТРОКИ
+       ══════════════════════════════════════ */
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateX(10px);
+      }
+    }
+
+    /* Класс вешается на строку перед удалением */
+    tr.deleting {
+      animation: fadeOut 0.25s ease forwards;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">// MESSAGES</div>
-    <div class="user-chip">
-      <div class="user-name">вошли как <span id="header-user"></span></div>
-      <button class="btn-logout" onclick="doLogout()">Выйти</button>
-    </div>
-  </header>
+<!-- ════════════════════════════════════
+     ШАПКА СТРАНИЦЫ
+     ════════════════════════════════════ -->
+<header>
+  <div class="logo">// МИНИТВИТТЕР</div>
+  <div class="user-chip">
+    <!-- Имя заполняется из sessionStorage через JS -->
+    <div class="user-name">вошли как <span id="header-user"></span></div>
+    <button class="btn-logout" onclick="doLogout()">Выйти</button>
+  </div>
+</header>
 
-  <main>
-    <div class="page-label">Входящие</div>
-    <div class="page-title">Сообщения</div>
+<!-- ════════════════════════════════════
+     ОСНОВНОЙ КОНТЕНТ
+     ════════════════════════════════════ -->
+<main>
+  <div class="page-label">Задание 4</div>
+  <div class="page-title">Минитвиттер</div>
 
-    <div class="compose">
-      <textarea id="msg-input" placeholder="Написать сообщение…"></textarea>
-      <div class="compose-footer">
-        <button class="btn-send" onclick="sendMessage()">Отправить</button>
-      </div>
-    </div>
+  <!-- ФОРМА ОТПРАВКИ НОВОГО СООБЩЕНИЯ -->
+  <div class="compose">
+    <div class="compose-title">Новое сообщение</div>
 
-    <div class="messages-list" id="messages-list">
-      <!-- messages rendered here -->
+    <!-- Поле ввода сообщения; maxlength ограничивает длину на уровне HTML -->
+    <textarea
+      id="msg-input"
+      placeholder="Что происходит?"
+      maxlength="280"
+      oninput="updateCount()"
+    ></textarea>
+
+    <div class="compose-footer">
+      <!-- Счётчик: показывает сколько символов введено из 280 -->
+      <span class="char-count" id="char-count">0 / 280</span>
+      <!-- Кнопка отправки -->
+      <button class="btn-send" onclick="sendMessage()">Отправить</button>
     </div>
-  </main>
+  </div>
+
+  <!-- ЗАГОЛОВОК НАД ТАБЛИЦЕЙ -->
+  <div class="table-header">
+    <div class="table-heading">Все сообщения</div>
+    <!-- Количество сообщений обновляется через JS -->
+    <div class="table-count" id="table-count"></div>
+  </div>
+
+  <!-- ТАБЛИЦА СООБЩЕНИЙ -->
+  <div class="table-wrap">
+    <table>
+      <!-- Шапка таблицы -->
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Автор</th>
+          <th>Сообщение</th>
+          <th>Время</th>
+          <th>Действие</th>
+        </tr>
+      </thead>
+      <!-- Тело таблицы заполняется через JS функцией renderTable() -->
+      <tbody id="msg-tbody"></tbody>
+    </table>
+
+    <!-- Заглушка, если сообщений нет -->
+    <div id="empty-state" class="empty-state" style="display:none">
+      <span class="icon">💬</span>
+      Пока нет сообщений. Напишите первым!
+    </div>
+  </div>
+</main>
 
 <script>
-  // ── Auth guard ───────────────────────────────
+  // ══════════════════════════════════════════════
+  //  ЗАЩИТА СТРАНИЦЫ: только для авторизованных
+  // ══════════════════════════════════════════════
+
+  // Читаем имя текущего пользователя из сессии
   const currentUser = sessionStorage.getItem('auth_user');
+
+  // Если пользователь не авторизован — перенаправляем на страницу входа
   if (!currentUser) {
     window.location.href = 'index.html';
   }
 
+  // Показываем имя пользователя в шапке
   document.getElementById('header-user').textContent = currentUser;
 
-  // ── Logout ───────────────────────────────────
+  // ══════════════════════════════════════════════
+  //  ВЫХОД ИЗ АККАУНТА
+  // ══════════════════════════════════════════════
   function doLogout() {
+    // Удаляем данные автовхода, чтобы не войти снова автоматически
     localStorage.removeItem('auto_login');
     localStorage.removeItem('auto_pass');
+    // Удаляем текущую сессию
     sessionStorage.removeItem('auth_user');
+    // Перенаправляем на страницу входа
     window.location.href = 'index.html';
   }
 
-  // ── Messages storage ─────────────────────────
+  // ══════════════════════════════════════════════
+  //  "БАЗА ДАННЫХ" СООБЩЕНИЙ (localStorage)
+  //  Хранит массив объектов: [{ id, author, text, time }, ...]
+  // ══════════════════════════════════════════════
+
+  // Получить все сообщения из localStorage
   function getMessages() {
     return JSON.parse(localStorage.getItem('messages') || '[]');
   }
 
+  // Сохранить массив сообщений в localStorage
   function saveMessages(msgs) {
     localStorage.setItem('messages', JSON.stringify(msgs));
   }
 
-  function renderMessages() {
-    const list = document.getElementById('messages-list');
-    const msgs = getMessages();
+  // ══════════════════════════════════════════════
+  //  СЧЁТЧИК СИМВОЛОВ В ПОЛЕ ВВОДА
+  // ══════════════════════════════════════════════
+  function updateCount() {
+    const len = document.getElementById('msg-input').value.length;
+    const el  = document.getElementById('char-count');
+    el.textContent = len + ' / 280';
+    // Подсвечиваем красным, если введено больше 250 символов
+    el.classList.toggle('warn', len > 250);
+  }
 
+  // ══════════════════════════════════════════════
+  //  ОТПРАВКА НОВОГО СООБЩЕНИЯ
+  // ══════════════════════════════════════════════
+  function sendMessage() {
+    const input = document.getElementById('msg-input');
+    const text  = input.value.trim();
+
+    // Не отправляем пустое сообщение
+    if (!text) return;
+
+    // Создаём объект сообщения
+    const msgs = getMessages();
+    msgs.push({
+      id:     Date.now(),    // уникальный ID на основе временной метки
+      author: currentUser,  // имя автора из сессии
+      text:   text,
+      time:   new Date().toLocaleString('ru-RU') // дата и время на русском
+    });
+
+    // Сохраняем обновлённый список в "БД"
+    saveMessages(msgs);
+
+    // Очищаем поле ввода и сбрасываем счётчик
+    input.value = '';
+    updateCount();
+
+    // Перерисовываем таблицу
+    renderTable();
+  }
+
+  // ══════════════════════════════════════════════
+  //  УДАЛЕНИЕ СООБЩЕНИЯ
+  //  Доступно только для собственных сообщений
+  // ══════════════════════════════════════════════
+  function deleteMessage(id) {
+    // Находим строку таблицы по атрибуту data-id
+    const tr = document.querySelector(`tr[data-id="${id}"]`);
+    if (!tr) return;
+
+    // Запускаем анимацию исчезновения
+    tr.classList.add('deleting');
+
+    // После окончания анимации удаляем сообщение из "БД" и перерисовываем таблицу
+    tr.addEventListener('animationend', () => {
+      const msgs = getMessages().filter(m => m.id !== id);
+      saveMessages(msgs);
+      renderTable();
+    }, { once: true });
+  }
+
+  // ══════════════════════════════════════════════
+  //  ЭКРАНИРОВАНИЕ HTML
+  //  Защита от XSS: спецсимволы не интерпретируются как HTML
+  // ══════════════════════════════════════════════
+  function esc(s) {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  // ══════════════════════════════════════════════
+  //  ПРАВИЛЬНОЕ СКЛОНЕНИЕ СУЩЕСТВИТЕЛЬНЫХ
+  //  Пример: 1 сообщение, 3 сообщения, 11 сообщений
+  // ══════════════════════════════════════════════
+  function plural(n, one, few, many) {
+    const m10  = n % 10;
+    const m100 = n % 100;
+    if (m100 >= 11 && m100 <= 14) return many;
+    if (m10 === 1) return one;
+    if (m10 >= 2 && m10 <= 4) return few;
+    return many;
+  }
+
+  // ══════════════════════════════════════════════
+  //  ОТРИСОВКА ТАБЛИЦЫ СООБЩЕНИЙ
+  // ══════════════════════════════════════════════
+  function renderTable() {
+    const msgs  = getMessages();
+    const tbody = document.getElementById('msg-tbody');
+    const empty = document.getElementById('empty-state');
+    const count = document.getElementById('table-count');
+
+    // Обновляем счётчик над таблицей
+    count.textContent = msgs.length
+      ? msgs.length + ' ' + plural(msgs.length, 'сообщение', 'сообщения', 'сообщений')
+      : '';
+
+    // Если сообщений нет — показываем заглушку
     if (msgs.length === 0) {
-      list.innerHTML = `
-        <div class="empty-state">
-          <span class="icon">💬</span>
-          Нет сообщений. Напишите первым!
-        </div>`;
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
       return;
     }
 
-    list.innerHTML = msgs.slice().reverse().map(m => `
-      <div class="message-card">
-        <div class="message-meta">
-          <span class="message-author">@${m.author}</span>
-          <span class="message-time">${m.time}</span>
-        </div>
-        <div class="message-text">${escapeHtml(m.text)}</div>
-      </div>
-    `).join('');
+    empty.style.display = 'none';
+
+    // Отображаем новые сообщения сверху (slice().reverse() не изменяет оригинал)
+    tbody.innerHTML = msgs.slice().reverse().map((m, i) => {
+      const isMe    = m.author === currentUser; // это сообщение текущего пользователя?
+      const rowCls  = isMe ? 'own-row' : '';    // класс для подсветки своих строк
+      const authCls = isMe ? 'td-author is-me' : 'td-author'; // цвет имени автора
+
+      // Кнопка удаления — только для своих сообщений
+      const action = isMe
+        ? `<button class="btn-delete" onclick="deleteMessage(${m.id})">✕ удалить</button>`
+        : `<span style="color:var(--border);font-size:16px;">·</span>`; // для чужих — просто точка
+
+      return `
+        <tr class="${rowCls}" data-id="${m.id}">
+          <td class="td-num">${msgs.length - i}</td>
+          <td class="${authCls}">@${esc(m.author)}</td>
+          <td class="td-text">${esc(m.text)}</td>
+          <td class="td-time">${m.time}</td>
+          <td class="td-action">${action}</td>
+        </tr>`;
+    }).join('');
   }
 
-  function escapeHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  function sendMessage() {
-    const input = document.getElementById('msg-input');
-    const text = input.value.trim();
-    if (!text) return;
-
-    const msgs = getMessages();
-    msgs.push({
-      author: currentUser,
-      text: text,
-      time: new Date().toLocaleString('ru-RU')
-    });
-    saveMessages(msgs);
-    input.value = '';
-    renderMessages();
-  }
-
-  // Enter to send (Shift+Enter for newline)
+  // ══════════════════════════════════════════════
+  //  ГОРЯЧИЕ КЛАВИШИ
+  //  Enter — отправить сообщение
+  //  Shift + Enter — перенос строки
+  // ══════════════════════════════════════════════
   document.getElementById('msg-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
+      e.preventDefault(); // отменяем стандартный перенос строки
       sendMessage();
     }
   });
 
-  renderMessages();
+  // Первоначальная отрисовка таблицы при загрузке страницы
+  renderTable();
 </script>
 </body>
 </html>

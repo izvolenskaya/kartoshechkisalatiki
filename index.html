@@ -4,37 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Авторизация</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg: #0d0d0f;
-      --surface: #16161a;
-      --border: #2a2a32;
-      --accent: #c8f060;
-      --accent2: #60c8f0;
-      --text: #e8e8ec;
-      --muted: #6b6b7a;
-      --error: #f06070;
-      --success: #60f0a0;
-      --radius: 4px;
+  <!-- Подключаем шрифты Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* Сброс стандартных отступов браузера */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
+    /* ── CSS-переменные (цвета и радиус скругления) ── */
+    :root {
+      --bg:      #0d0d0f;   /* основной фон страницы */
+      --surface: #16161a;   /* фон карточки */
+      --border:  #2a2a32;   /* цвет рамок */
+      --accent:  #c8f060;   /* основной акцентный цвет (зелёный) */
+      --accent2: #60c8f0;   /* вторичный акцент (голубой) */
+      --text:    #e8e8ec;   /* основной цвет текста */
+      --muted:   #6b6b7a;   /* приглушённый текст */
+      --error:   #f06070;   /* цвет ошибок */
+      --success: #60f0a0;   /* цвет успешных сообщений */
+      --radius:  4px;       /* радиус скругления элементов */
+    }
+
+    /* ── Стили body: центрирование содержимого ── */
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Syne', sans-serif;
       min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      align-items: center;       /* вертикальное центрирование */
+      justify-content: center;   /* горизонтальное центрирование */
       padding: 24px;
       position: relative;
       overflow: hidden;
     }
 
-    /* Background grid decoration */
+    /* Декоративная сетка на фоне (через псевдоэлемент) */
     body::before {
       content: '';
       position: fixed;
@@ -44,36 +54,41 @@
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
       background-size: 48px 48px;
       opacity: 0.4;
-      pointer-events: none;
+      pointer-events: none; /* не перекрывает клики */
     }
 
+    /* Декоративное свечение в углу страницы */
     body::after {
       content: '';
       position: fixed;
-      top: -200px; right: -200px;
-      width: 500px; height: 500px;
+      top: -200px;
+      right: -200px;
+      width: 500px;
+      height: 500px;
       background: radial-gradient(circle, rgba(200,240,96,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    /* ── CARD ─────────────────────────────────── */
+    /* ── Карточка с формой ── */
     .card {
       position: relative;
       width: 100%;
-      max-width: 420px;
+      max-width: 420px;            /* максимальная ширина */
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 40px 36px 36px;
       box-shadow: 0 0 0 1px rgba(200,240,96,0.04), 0 32px 64px rgba(0,0,0,0.5);
-      animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
+      animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1) both; /* анимация появления */
     }
 
+    /* Анимация: карточка появляется снизу */
     @keyframes slideUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* Маленькая подпись над заголовком */
     .card-label {
       font-family: 'Space Mono', monospace;
       font-size: 10px;
@@ -83,6 +98,7 @@
       margin-bottom: 8px;
     }
 
+    /* Крупный заголовок формы */
     .card-title {
       font-size: 28px;
       font-weight: 800;
@@ -91,11 +107,12 @@
       letter-spacing: -0.02em;
     }
 
-    /* ── FORM FIELDS ──────────────────────────── */
+    /* ── Обёртка поля ввода ── */
     .field {
       margin-bottom: 20px;
     }
 
+    /* Подпись (лейбл) над полем ввода */
     label {
       display: block;
       font-size: 11px;
@@ -107,6 +124,7 @@
       font-family: 'Space Mono', monospace;
     }
 
+    /* Стили текстовых полей и полей пароля */
     input[type="text"],
     input[type="password"] {
       width: 100%;
@@ -121,18 +139,20 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
 
+    /* Подсветка поля при фокусе */
     input[type="text"]:focus,
     input[type="password"]:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(200,240,96,0.1);
     }
 
+    /* Подсветка поля при ошибке валидации */
     input.error-field {
       border-color: var(--error);
       box-shadow: 0 0 0 3px rgba(240,96,112,0.1);
     }
 
-    /* ── CHECKBOX ─────────────────────────────── */
+    /* ── Строка с чекбоксом ── */
     .checkbox-row {
       display: flex;
       align-items: center;
@@ -141,6 +161,7 @@
       cursor: pointer;
     }
 
+    /* Кастомный стиль чекбокса */
     .checkbox-row input[type="checkbox"] {
       appearance: none;
       -webkit-appearance: none;
@@ -155,28 +176,34 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
+    /* Чекбокс в состоянии "отмечен" */
     .checkbox-row input[type="checkbox"]:checked {
       background: var(--accent);
       border-color: var(--accent);
     }
 
+    /* Галочка внутри отмеченного чекбокса */
     .checkbox-row input[type="checkbox"]:checked::after {
       content: '';
       position: absolute;
-      left: 5px; top: 2px;
-      width: 5px; height: 9px;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 9px;
       border: 2px solid #0d0d0f;
-      border-top: none; border-left: none;
+      border-top: none;
+      border-left: none;
       transform: rotate(45deg);
     }
 
+    /* Текст рядом с чекбоксом */
     .checkbox-row span {
       font-size: 13px;
       color: var(--muted);
       user-select: none;
     }
 
-    /* ── BUTTON ───────────────────────────────── */
+    /* ── Кнопка отправки формы ── */
     .btn {
       width: 100%;
       padding: 14px;
@@ -191,21 +218,26 @@
       transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
     }
 
+    /* Основной стиль кнопки */
     .btn-primary {
       background: var(--accent);
       color: #0d0d0f;
     }
 
+    /* Эффект при наведении */
     .btn-primary:hover {
       transform: translateY(-1px);
       box-shadow: 0 8px 24px rgba(200,240,96,0.3);
     }
 
-    .btn-primary:active { transform: translateY(0); }
+    /* Эффект при нажатии */
+    .btn-primary:active {
+      transform: translateY(0);
+    }
 
-    /* ── MESSAGES ─────────────────────────────── */
+    /* ── Блок с сообщением (ошибка / успех) ── */
     .msg {
-      display: none;
+      display: none;            /* по умолчанию скрыт */
       padding: 12px 14px;
       border-radius: var(--radius);
       font-size: 13px;
@@ -214,23 +246,32 @@
       border-left: 3px solid;
     }
 
-    .msg.show { display: block; animation: fadeIn 0.2s ease; }
+    /* Показать сообщение с анимацией */
+    .msg.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
 
+    /* Стиль сообщения об ошибке */
     .msg-error {
       background: rgba(240,96,112,0.08);
       border-color: var(--error);
       color: var(--error);
     }
 
+    /* Стиль сообщения об успехе */
     .msg-success {
       background: rgba(96,240,160,0.08);
       border-color: var(--success);
       color: var(--success);
     }
 
-    /* ── TOGGLE LINK ──────────────────────────── */
+    /* ── Ссылка для переключения между формами ── */
     .switch-link {
       text-align: center;
       margin-top: 24px;
@@ -249,125 +290,173 @@
       padding: 0;
     }
 
-    .switch-link button:hover { color: var(--accent); }
+    .switch-link button:hover {
+      color: var(--accent);
+    }
 
-    /* ── FORM PANELS ──────────────────────────── */
-    .form-panel { display: none; }
-    .form-panel.active { display: block; }
+    /* ── Панели форм (одна видна, другая скрыта) ── */
+    .form-panel {
+      display: none;
+    }
+
+    .form-panel.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
 
 <div class="card">
 
-  <!-- ═══ REGISTRATION FORM ═══ -->
+  <!-- ════════════════════════════════════
+       ФОРМА РЕГИСТРАЦИИ
+       ════════════════════════════════════ -->
   <div id="panel-reg" class="form-panel active">
     <div class="card-label">Новый аккаунт</div>
     <div class="card-title">Регистрация</div>
 
+    <!-- Блок для вывода ошибок / успехов регистрации -->
     <div id="reg-msg" class="msg"></div>
 
+    <!-- Поле ввода логина -->
     <div class="field">
       <label for="reg-login">Логин</label>
       <input type="text" id="reg-login" placeholder="user_name-01" autocomplete="off"/>
     </div>
 
+    <!-- Поле ввода пароля -->
     <div class="field">
       <label for="reg-pass">Пароль</label>
       <input type="password" id="reg-pass" placeholder="не менее 6 символов"/>
     </div>
 
+    <!-- Чекбокс «Сохранить данные» -->
     <label class="checkbox-row" for="reg-save">
       <input type="checkbox" id="reg-save"/>
       <span>Сохранить данные</span>
     </label>
 
+    <!-- Кнопка отправки формы регистрации -->
     <button class="btn btn-primary" onclick="doRegister()">Создать аккаунт</button>
 
+    <!-- Переключение на форму входа -->
     <div class="switch-link">
       Уже есть аккаунт?
       <button onclick="showPanel('login')">Войти</button>
     </div>
   </div>
 
-  <!-- ═══ LOGIN FORM ═══ -->
+  <!-- ════════════════════════════════════
+       ФОРМА ВХОДА
+       ════════════════════════════════════ -->
   <div id="panel-login" class="form-panel">
     <div class="card-label">Добро пожаловать</div>
     <div class="card-title">Вход</div>
 
+    <!-- Блок для вывода ошибок / успехов входа -->
     <div id="login-msg" class="msg"></div>
 
+    <!-- Поле ввода логина -->
     <div class="field">
       <label for="login-login">Логин</label>
       <input type="text" id="login-login" placeholder="user_name-01" autocomplete="off"/>
     </div>
 
+    <!-- Поле ввода пароля -->
     <div class="field">
       <label for="login-pass">Пароль</label>
       <input type="password" id="login-pass" placeholder="••••••"/>
     </div>
 
+    <!-- Чекбокс «Автоматически авторизоваться» -->
     <label class="checkbox-row" for="login-auto">
       <input type="checkbox" id="login-auto"/>
       <span>Автоматически авторизоваться при следующем входе</span>
     </label>
 
+    <!-- Кнопка отправки формы входа -->
     <button class="btn btn-primary" onclick="doLogin()">Войти</button>
 
+    <!-- Переключение на форму регистрации -->
     <div class="switch-link">
       Нет аккаунта?
       <button onclick="showPanel('reg')">Зарегистрироваться</button>
     </div>
   </div>
 
-</div>
+</div><!-- /.card -->
 
 <script>
-  // ── Helpers ──────────────────────────────────
+  // ══════════════════════════════════════════════
+  //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+  // ══════════════════════════════════════════════
+
+  // Сокращение для document.getElementById
   const $ = id => document.getElementById(id);
 
+  // Переключение между панелями (регистрация / вход)
   function showPanel(name) {
     document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
     $('panel-' + name).classList.add('active');
-    clearMessages();
+    clearMessages(); // очищаем старые сообщения при переключении
   }
 
+  // Показать сообщение об ошибке или успехе
+  // id    — идентификатор блока сообщения
+  // text  — текст сообщения
+  // type  — 'error' или 'success'
   function showMsg(id, text, type) {
     const el = $(id);
     el.textContent = text;
     el.className = 'msg show msg-' + type;
   }
 
+  // Скрыть все сообщения на странице
   function clearMessages() {
     document.querySelectorAll('.msg').forEach(m => m.className = 'msg');
   }
 
+  // Пометить поле ввода как ошибочное (красная рамка)
+  // При следующем вводе рамка сама снимется
   function markError(id) {
     $(id).classList.add('error-field');
     $(id).addEventListener('input', () => $(id).classList.remove('error-field'), { once: true });
   }
 
-  // ── Storage helpers ───────────────────────────
+  // ══════════════════════════════════════════════
+  //  РАБОТА С "БАЗОЙ ДАННЫХ" (localStorage)
+  // ══════════════════════════════════════════════
+
+  // Получить всех зарегистрированных пользователей
+  // Возвращает объект вида { логин: пароль }
   function getUsers() {
     return JSON.parse(localStorage.getItem('users') || '{}');
   }
 
+  // Сохранить нового пользователя в localStorage
   function saveUser(login, password) {
     const users = getUsers();
     users[login] = password;
     localStorage.setItem('users', JSON.stringify(users));
   }
 
-  // ── Validation ───────────────────────────────
+  // ══════════════════════════════════════════════
+  //  ВАЛИДАЦИЯ
+  // ══════════════════════════════════════════════
+
+  // Регулярное выражение для логина:
+  // разрешены латинские буквы, цифры, _ и -
   const loginRe = /^[a-zA-Z0-9_-]+$/;
 
-  // ── Registration ─────────────────────────────
+  // ══════════════════════════════════════════════
+  //  РЕГИСТРАЦИЯ
+  // ══════════════════════════════════════════════
   function doRegister() {
     const login = $('reg-login').value.trim();
     const pass  = $('reg-pass').value;
-    const save  = $('reg-save').checked;
+    const save  = $('reg-save').checked; // нужно ли сохранить данные
 
-    // Validate required
+    // Проверка: все поля заполнены
     if (!login || !pass) {
       showMsg('reg-msg', 'Все поля обязательны для заполнения.', 'error');
       if (!login) markError('reg-login');
@@ -375,24 +464,25 @@
       return;
     }
 
-    // Validate login format
+    // Проверка: логин соответствует допустимым символам
     if (!loginRe.test(login)) {
       showMsg('reg-msg', 'Логин может содержать только латинские буквы, цифры, _ и -.', 'error');
       markError('reg-login');
       return;
     }
 
-    // Validate password length
+    // Проверка: пароль не короче 6 символов
     if (pass.length < 6) {
       showMsg('reg-msg', 'Пароль должен содержать не менее 6 символов.', 'error');
       markError('reg-pass');
       return;
     }
 
-    // Check if user exists
+    // Проверка: пользователь с таким логином уже существует
     const users = getUsers();
     if (users[login] !== undefined) {
       showMsg('reg-msg', 'Пользователь с таким логином уже существует. Перенаправляем на вход…', 'error');
+      // Через 1.5 секунды переключаемся на форму входа и подставляем логин
       setTimeout(() => {
         showPanel('login');
         $('login-login').value = login;
@@ -400,9 +490,10 @@
       return;
     }
 
-    // Register
+    // Сохраняем нового пользователя в "БД"
     saveUser(login, pass);
 
+    // Если чекбокс «Сохранить данные» отмечен — запоминаем логин и пароль
     if (save) {
       localStorage.setItem('saved_login', login);
       localStorage.setItem('saved_pass', pass);
@@ -412,18 +503,23 @@
     }
 
     showMsg('reg-msg', 'Регистрация прошла успешно! Выполняем вход…', 'success');
+
+    // Через 1 секунду автоматически входим и переходим на страницу сообщений
     setTimeout(() => {
-      sessionStorage.setItem('auth_user', login);
+      sessionStorage.setItem('auth_user', login); // записываем текущего пользователя в сессию
       window.location.href = 'messages.html';
     }, 1000);
   }
 
-  // ── Login ────────────────────────────────────
+  // ══════════════════════════════════════════════
+  //  ВХОД
+  // ══════════════════════════════════════════════
   function doLogin() {
     const login = $('login-login').value.trim();
     const pass  = $('login-pass').value;
-    const auto  = $('login-auto').checked;
+    const auto  = $('login-auto').checked; // автоматически авторизоваться в следующий раз
 
+    // Проверка: все поля заполнены
     if (!login || !pass) {
       showMsg('login-msg', 'Все поля обязательны для заполнения.', 'error');
       if (!login) markError('login-login');
@@ -432,39 +528,52 @@
     }
 
     const users = getUsers();
+
+    // Проверка: пользователь существует
     if (users[login] === undefined) {
       showMsg('login-msg', 'Пользователь не найден.', 'error');
       markError('login-login');
       return;
     }
 
+    // Проверка: пароль верный
     if (users[login] !== pass) {
       showMsg('login-msg', 'Неверный пароль.', 'error');
       markError('login-pass');
       return;
     }
 
-    // Auto-login: store in localStorage; otherwise use sessionStorage only
+    // Если чекбокс «Автоматически авторизоваться» отмечен —
+    // сохраняем данные в localStorage для автовхода при следующем открытии страницы
     if (auto) {
       localStorage.setItem('auto_login', login);
       localStorage.setItem('auto_pass', pass);
     } else {
+      // Иначе — удаляем сохранённые данные автовхода
       localStorage.removeItem('auto_login');
       localStorage.removeItem('auto_pass');
     }
 
+    // Записываем авторизованного пользователя в сессию
     sessionStorage.setItem('auth_user', login);
+
     showMsg('login-msg', 'Вход выполнен! Перенаправляем…', 'success');
+
+    // Через 0.8 секунды переходим на страницу сообщений
     setTimeout(() => { window.location.href = 'messages.html'; }, 800);
   }
 
-  // ── On page load: check auto-login & saved data ──
+  // ══════════════════════════════════════════════
+  //  ИНИЦИАЛИЗАЦИЯ: выполняется при загрузке страницы
+  // ══════════════════════════════════════════════
   (function init() {
-    // Auto-login redirect
+    // Проверяем, есть ли сохранённые данные для автоматического входа
     const autoUser = localStorage.getItem('auto_login');
     const autoPass = localStorage.getItem('auto_pass');
+
     if (autoUser && autoPass) {
       const users = getUsers();
+      // Если данные валидны — сразу перенаправляем на страницу сообщений
       if (users[autoUser] === autoPass) {
         sessionStorage.setItem('auth_user', autoUser);
         window.location.href = 'messages.html';
@@ -472,7 +581,8 @@
       }
     }
 
-    // Pre-fill saved registration data
+    // Если чекбокс «Сохранить данные» был отмечен при регистрации —
+    // подставляем сохранённые значения в форму регистрации
     const savedLogin = localStorage.getItem('saved_login');
     const savedPass  = localStorage.getItem('saved_pass');
     if (savedLogin) $('reg-login').value = savedLogin;
